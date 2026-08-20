@@ -22,14 +22,13 @@ src/plugins/weather/
 ```ts
 // 推荐
 @Command('ping')
-ping(ctx) {
+ping(event, ctx) {
     ctx.reply('pong');
 }
 
 // 不推荐:还得手动判断场景与事件类型
 @Command('ping')
-async ping(ctx) {
-    const { event } = ctx;
+async ping(event, ctx) {
     if (isGroupMessageEvent(event)) {
         await this.bot.client.sendGroupMessage(event.group_id, 'pong');
     } else if (isPrivateMessageEvent(event)) {

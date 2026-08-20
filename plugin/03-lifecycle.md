@@ -35,7 +35,7 @@ export class StatsPlugin extends Plugin {
     }
 
     @Command('stats')
-    stats(ctx) {
+    stats(event, ctx) {
         ctx.reply(`累计收到 ${this.hits} 条消息`);
     }
 }

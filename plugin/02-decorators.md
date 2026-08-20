@@ -253,3 +253,55 @@ export class GreetPlugin extends Plugin {
 ```
 
 > 注意:此时 `@Command` 分支的处理器会多收到第三个参数 `match`,其余分支忽略即可。
+
+## 处理器参数与类型标注
+
+### 参数顺序(重要)
+
+**所有处理器的第一个参数都是事件对象 `event`,不是 `ctx`。**
+
+| 装饰器           | 处理器签名                              |
+| ---------------- | --------------------------------------- |
+| `@Command`       | `(event, ctx, match)`                   |
+| 事件装饰器       | `(event, ctx)`                          |
+| `@OnMiddleware`  | `(event, ctx, next)`                    |
+
+`ctx` 上才有 `reply()` / `approve()` 等方法;`event` 是事件数据(如 `event.group_id`)。把第一个参数命名为 `ctx` 会让 `ctx.reply()` 在运行时崩溃(事件对象没有 `reply`)。
+
+### 为什么参数要手动标注类型
+
+TypeScript 的装饰器**无法推断**处理器方法的参数类型:装饰器只对方法做单向类型检查,不会反向给方法参数提供类型。因此在 `strict` 下,未标注的参数会报隐式 `any`。需要手动标注。
+
+### 推荐标注写法
+
+框架在 `src/core` 导出了便捷类型,从 `../core` 一次导入即可:
+
+```ts
+import { Plugin, Command, OnGroupMessage } from '../core';
+import type {
+    CommandContext,       // = ctx(含 command 字段),@Command 专用
+    CommandMatch,         // @Command 的 match
+    OneBotGroupMessageEvent,
+    OneBotMessageEvent,
+    SnowLumaEventContext, // 事件装饰器的 ctx
+} from '../core';
+
+export class TypedPlugin extends Plugin {
+    @Command('test')
+    test(event: OneBotMessageEvent, ctx: CommandContext, match: CommandMatch) {
+        ctx.reply(`命中: ${match.command}`);
+    }
+
+    @Command('simple')
+    simple(event: OneBotMessageEvent, ctx: CommandContext) {
+        ctx.reply('不用 match 时可以不写第三个参数');
+    }
+
+    @OnGroupMessage()
+    onGroup(event: OneBotGroupMessageEvent, ctx: SnowLumaEventContext) {
+        ctx.reply(`群 ${event.group_id}`);
+    }
+}
+```
+
+不习惯标注时可以省略类型(`strict` 下会报隐式 any,不影响运行),或在 `07-types-and-guards` 查看更多类型写法。

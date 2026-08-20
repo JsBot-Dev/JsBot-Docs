@@ -25,7 +25,7 @@ import { Plugin, Command } from '../core';
 
 export class PingPlugin extends Plugin {
     @Command('ping')
-    ping(ctx) {
+    ping(event, ctx) {
         ctx.reply('pong');
     }
 }

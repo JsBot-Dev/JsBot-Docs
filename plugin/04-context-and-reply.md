@@ -21,7 +21,7 @@
 
 ```ts
 @Command('ping')
-ping(ctx) {
+ping(event, ctx) {
     ctx.reply('pong');          // 纯文本
     ctx.reply(['你好', '世界']); // 字符串数组(每段一行)
     ctx.reply(chain().text('多').face(1).text('段消息'));
@@ -94,7 +94,7 @@ echo(event, ctx) {
 
 // 发送图片卡片
 @Command('cat', { prefixes: '/' })
-cat(ctx) {
+cat(event, ctx) {
     ctx.reply(
         chain()
             .text('今日猫猫:')
@@ -106,7 +106,7 @@ cat(ctx) {
 
 // @全体 + 通知
 @Command('announce')
-announce(ctx) {
+announce(event, ctx) {
     ctx.reply(chain().atAll().text(' 全体注意!'));
 }
 ```

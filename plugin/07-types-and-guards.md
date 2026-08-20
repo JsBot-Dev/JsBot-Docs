@@ -102,22 +102,20 @@ onGroup(event: OneBotGroupMessageEvent, ctx: SnowLumaEventContext) {
 `ctx` 附带 `command` 字段,`match` 是第三个参数:
 
 ```ts
-import type { SnowLumaEventContext, CommandMatch } from '@snowluma/sdk';
+import type { CommandContext, CommandMatch, OneBotMessageEvent } from '../core';
 
 @Command('ping')
-ping(
-    event: OneBotMessageEvent,
-    ctx: SnowLumaEventContext & { command: CommandMatch },
-    match: CommandMatch,
-) {
+ping(event: OneBotMessageEvent, ctx: CommandContext, match: CommandMatch) {
     ctx.reply(`命中命令: ${match.command}`);
 }
 ```
 
+> `CommandContext = SnowLumaEventContext & { command: CommandMatch }`,由 `../core` 导出,无需手动拼。
+
 ### 中间件
 
 ```ts
-import type { SnowLumaEvent, SnowLumaEventContext, EventNext } from '@snowluma/sdk';
+import type { EventNext, SnowLumaEventContext } from '../core';
 
 @OnMiddleware()
 async mw(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
