@@ -196,5 +196,5 @@ onMessage(event, ctx) {
 
 ## 下一步
 
-- 完整动作返回类型 → [05-动作调用](05-动作调用.md)
-- 类型安全的最佳实践 → [08-最佳实践](08-最佳实践.md)
+- 完整动作返回类型 → [05-actions](05-actions.md)
+- 类型安全的最佳实践 → [08-best-practices](08-best-practices.md)

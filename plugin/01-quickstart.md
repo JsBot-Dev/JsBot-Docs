@@ -31,7 +31,7 @@ export class PingPlugin extends Plugin {
 }
 ```
 
-- `Command('ping')` 注册命令,用户在群里或私聊发送 `/ping` 时触发(默认前缀 `/`,见 [02-装饰器](02-装饰器.md))
+- `Command('ping')` 注册命令,用户在群里或私聊发送 `/ping` 时触发(默认前缀 `/`,见 [02-decorators](02-decorators.md))
 - 处理器参数 `ctx` 是事件上下文,`ctx.reply()` 自动按事件类型(群聊/私聊)回复
 
 ## 登记插件
@@ -81,9 +81,9 @@ npm run dev   # tsx watch 热重载,改代码自动重启
 | 事件装饰器       | `(event, ctx)`                                    |
 | `@OnMiddleware`  | `(event, ctx, next)`                              |
 
-详情见 [02-装饰器](02-装饰器.md)。
+详情见 [02-decorators](02-decorators.md)。
 
 ## 下一步
 
-- 了解全部装饰器 → [02-装饰器](02-装饰器.md)
-- 学会回复各种消息 → [04-事件上下文与回复](04-事件上下文与回复.md)
+- 了解全部装饰器 → [02-decorators](02-decorators.md)
+- 学会回复各种消息 → [04-context-and-reply](04-context-and-reply.md)

@@ -122,7 +122,7 @@ await this.bot.client.sendGroupMessage(123456, chain().text('通知:'));
 await this.bot.client.sendPrivateMessage(10001, '你好');
 ```
 
-更完整的动作调用见 [05-动作调用](05-动作调用.md)。
+更完整的动作调用见 [05-actions](05-actions.md)。
 
 ## 请求事件决策
 

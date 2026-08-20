@@ -162,5 +162,5 @@ import {
 
 ## 下一步
 
-- 事件类型与守卫 → [07-类型与守卫](07-类型与守卫.md)
-- 错误处理与并发约定 → [08-最佳实践](08-最佳实践.md)
+- 事件类型与守卫 → [07-types-and-guards](07-types-and-guards.md)
+- 错误处理与并发约定 → [08-best-practices](08-best-practices.md)

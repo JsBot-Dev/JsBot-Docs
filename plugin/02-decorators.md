@@ -223,11 +223,11 @@ onGroupRequest(event, ctx) {
 }
 ```
 
-`ctx.approve()` / `ctx.reject(reason)` 见 [04-事件上下文与回复](04-事件上下文与回复.md)。
+`ctx.approve()` / `ctx.reject(reason)` 见 [04-context-and-reply](04-context-and-reply.md)。
 
 ### `@OnMiddleware()` — 事件中间件
 
-拦截所有事件,可放行、拦截或改写。详见 [06-中间件](06-中间件.md)。
+拦截所有事件,可放行、拦截或改写。详见 [06-middleware](06-middleware.md)。
 
 ```ts
 @OnMiddleware()

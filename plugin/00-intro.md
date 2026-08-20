@@ -6,14 +6,14 @@
 
 | 文档                                        | 内容                                       |
 | ------------------------------------------- | ------------------------------------------ |
-| [01-快速开始](01-快速开始.md)               | 插件本质、目录约定、最小插件、登记方式      |
-| [02-装饰器](02-装饰器.md)                   | `@Command` 与全部事件装饰器详解             |
-| [03-生命周期](03-生命周期.md)               | `onLoad` / `onUnload` 钩子                 |
-| [04-事件上下文与回复](04-事件上下文与回复.md) | `ctx` API、消息链构建、各类消息段           |
-| [05-动作调用](05-动作调用.md)               | 调用 OneBot 动作、分类示例、错误处理        |
-| [06-中间件](06-中间件.md)                   | 事件中间件拦截/放行/改写                    |
-| [07-类型与守卫](07-类型与守卫.md)           | 事件类型层级、类型守卫、断言模式            |
-| [08-最佳实践](08-最佳实践.md)               | 约定、错误处理、并发、状态管理、测试        |
+| [01-quickstart](01-quickstart.md)               | 插件本质、目录约定、最小插件、登记方式      |
+| [02-decorators](02-decorators.md)                   | `@Command` 与全部事件装饰器详解             |
+| [03-lifecycle](03-lifecycle.md)               | `onLoad` / `onUnload` 钩子                 |
+| [04-context-and-reply](04-context-and-reply.md) | `ctx` API、消息链构建、各类消息段           |
+| [05-actions](05-actions.md)               | 调用 OneBot 动作、分类示例、错误处理        |
+| [06-middleware](06-middleware.md)                   | 事件中间件拦截/放行/改写                    |
+| [07-types-and-guards](07-types-and-guards.md)           | 事件类型层级、类型守卫、断言模式            |
+| [08-best-practices](08-best-practices.md)               | 约定、错误处理、并发、状态管理、测试        |
 
 ## 基础概念
 
@@ -54,4 +54,4 @@ export class PingPlugin extends Plugin {
 
 ## 下一步
 
-[01-快速开始 →](01-快速开始.md)
+[01-quickstart →](01-quickstart.md)
