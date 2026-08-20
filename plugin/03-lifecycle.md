@@ -11,6 +11,7 @@
 
 ```ts
 import { Plugin, Command, OnMessage } from '../core';
+import type { CommandContext, OneBotMessageEvent } from '../core';
 import { loadData, saveData } from './data';
 
 export class StatsPlugin extends Plugin {
@@ -35,7 +36,7 @@ export class StatsPlugin extends Plugin {
     }
 
     @Command('stats')
-    stats(event, ctx) {
+    stats(event: OneBotMessageEvent, ctx: CommandContext) {
         ctx.reply(`累计收到 ${this.hits} 条消息`);
     }
 }

@@ -21,10 +21,11 @@
 
 ```ts
 import { Plugin, Command } from '../core';
+import type { CommandContext, OneBotMessageEvent } from '../core';
 
 export class PingPlugin extends Plugin {
     @Command('ping')
-    ping(event, ctx) {
+    ping(event: OneBotMessageEvent, ctx: CommandContext) {
         ctx.reply('pong');
     }
 }

@@ -20,15 +20,18 @@
 `reply` 自动判断场景:群消息回复到群里,私聊回复到私聊。无需手动传群号/QQ 号。
 
 ```ts
+import { chain, text } from '@snowluma/sdk';
+import type { CommandContext, OneBotMessageEvent } from '../core';
+
 @Command('ping')
-ping(event, ctx) {
+ping(event: OneBotMessageEvent, ctx: CommandContext) {
     ctx.reply('pong');          // 纯文本
-    ctx.reply(['你好', '世界']); // 字符串数组(每段一行)
+    ctx.reply(text('你好'));     // text() 构建文本段
     ctx.reply(chain().text('多').face(1).text('段消息'));
 }
 ```
 
-`message` 参数类型是 `OutgoingMessage`:字符串、消息段数组或 `MessageChain` 均可。
+`message` 参数类型是 `OutgoingMessage`:字符串、文本段、消息段数组或 `MessageChain` 均可。
 
 ## 消息链构建
 
@@ -85,16 +88,17 @@ reply(10086).text('收到');         // 引用消息 10086 并回复
 
 ```ts
 import { chain, at, image, reply } from '@snowluma/sdk';
+import type { CommandContext, OneBotGroupMessageEvent, OneBotMessageEvent, SnowLumaEventContext } from '../core';
 
 // 复读并 @ 发送者
 @OnGroupMessage()
-echo(event, ctx) {
+echo(event: OneBotGroupMessageEvent, ctx: SnowLumaEventContext) {
     ctx.reply(chain().reply(event.message_id).at(event.user_id).text(` ${event.raw_message}`));
 }
 
 // 发送图片卡片
 @Command('cat', { prefixes: '/' })
-cat(event, ctx) {
+cat(event: OneBotMessageEvent, ctx: CommandContext) {
     ctx.reply(
         chain()
             .text('今日猫猫:')
@@ -106,7 +110,7 @@ cat(event, ctx) {
 
 // @全体 + 通知
 @Command('announce')
-announce(event, ctx) {
+announce(event: OneBotMessageEvent, ctx: CommandContext) {
     ctx.reply(chain().atAll().text(' 全体注意!'));
 }
 ```
@@ -129,8 +133,10 @@ await this.bot.client.sendPrivateMessage(10001, '你好');
 好友/加群申请事件用 `approve` / `reject` 决策:
 
 ```ts
+import type { OneBotRequestEvent, SnowLumaEventContext } from '../core';
+
 @OnRequest('friend')
-onFriend(event, ctx) {
+onFriend(event: OneBotRequestEvent, ctx: SnowLumaEventContext) {
     if (event.comment?.includes('jsbot')) {
         ctx.approve();
     } else {
@@ -144,8 +150,10 @@ onFriend(event, ctx) {
 `stopPropagation()` 让当前事件不再进入后续处理器:
 
 ```ts
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 @OnMessage()
-onlyPing(event, ctx) {
+onlyPing(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
     if (event.raw_message !== 'ping') return;
     ctx.reply('pong');
     ctx.stopPropagation(); // 后续处理器不再收到这条消息

@@ -32,9 +32,11 @@
 字符串命令**天然支持参数**:消息按空白切分,第一个词是命令,其余作为参数。
 
 ```ts
+import type { CommandContext, OneBotMessageEvent } from '../core';
+
 // 裸命令:发送 ping 即命中
 @Command('ping', { prefixes: [''] })
-ping(event, ctx, match) {
+ping(event: OneBotMessageEvent, ctx: CommandContext) {
     ctx.reply('pong');
 }
 ```
@@ -42,8 +44,10 @@ ping(event, ctx, match) {
 带参示例:发送 `/set mode json` 时
 
 ```ts
+import type { CommandContext, CommandMatch, OneBotMessageEvent } from '../core';
+
 @Command('set', { prefixes: ['/'] })
-set(event, ctx, match) {
+set(event: OneBotMessageEvent, ctx: CommandContext, match: CommandMatch) {
     const key = match.args[0];   // 'mode'
     const rest = match.rest;     // 'mode json'
     ctx.reply(`key=${key}, value=${rest}`);
@@ -64,9 +68,11 @@ set(event, ctx, match) {
 正则用于需要**捕获组**或复杂结构的匹配。注意:**正则同样先剥离前缀再匹配**,正则里不要再写前缀斜杠。
 
 ```ts
+import type { CommandContext, CommandMatch, OneBotMessageEvent } from '../core';
+
 // 发送 /roll 100:剥离前缀后文本为 "roll 100"
 @Command(/^roll (\d+)$/)
-roll(event, ctx, match) {
+roll(event: OneBotMessageEvent, ctx: CommandContext, match: CommandMatch) {
     const sides = Number(match.match![1]); // 捕获组取数字 100
     ctx.reply(`${Math.floor(Math.random() * sides) + 1}`);
 }
@@ -80,8 +86,10 @@ roll(event, ctx, match) {
 如果只是「命令词 + 空白参数」,没必要用正则,用字符串命令即可:
 
 ```ts
+import type { CommandContext, CommandMatch, OneBotMessageEvent } from '../core';
+
 @Command('roll', { prefixes: [''] })
-roll(event, ctx, match) {
+roll(event: OneBotMessageEvent, ctx: CommandContext, match: CommandMatch) {
     const sides = Number(match.args[0] ?? 6);
     ctx.reply(`${Math.floor(Math.random() * sides) + 1}`);
 }
@@ -96,15 +104,17 @@ roll(event, ctx, match) {
 | `caseSensitive`| `boolean`          | `false`     | 是否区分大小写                           |
 
 ```ts
+import type { CommandContext, OneBotMessageEvent } from '../core';
+
 // 支持 /ping 和 !ping,大小写不敏感
 @Command('ping', { prefixes: ['/', '!'] })
-ping(event, ctx, match) {
+ping(event: OneBotMessageEvent, ctx: CommandContext) {
     ctx.reply('pong');
 }
 
 // 裸命令 ping(不带任何前缀)
 @Command('ping', { prefixes: [''] })
-ping(event, ctx, match) {
+ping(event: OneBotMessageEvent, ctx: CommandContext) {
     ctx.reply('pong');
 }
 ```
@@ -129,8 +139,10 @@ ping(event, ctx, match) {
 ### `@OnMessage()` — 任意消息
 
 ```ts
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 @OnMessage()
-onMessage(event, ctx) {
+onMessage(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
     // event 可能是群消息或私聊消息,常用 event.raw_message 取文本
     if (event.raw_message.includes('早上好')) {
         ctx.reply('早上好呀');
@@ -141,8 +153,10 @@ onMessage(event, ctx) {
 ### `@OnGroupMessage()` — 群聊消息
 
 ```ts
+import type { OneBotGroupMessageEvent, SnowLumaEventContext } from '../core';
+
 @OnGroupMessage()
-onGroup(event, ctx) {
+onGroup(event: OneBotGroupMessageEvent, ctx: SnowLumaEventContext) {
     const { group_id, user_id, raw_message, sender } = event;
     ctx.reply(`群 ${group_id} 里 ${sender.nickname} 说: ${raw_message}`);
 }
@@ -162,8 +176,10 @@ onGroup(event, ctx) {
 ### `@OnPrivateMessage()` — 私聊消息
 
 ```ts
+import type { OneBotPrivateMessageEvent, SnowLumaEventContext } from '../core';
+
 @OnPrivateMessage()
-onPrivate(event, ctx) {
+onPrivate(event: OneBotPrivateMessageEvent, ctx: SnowLumaEventContext) {
     const { user_id } = event;
     ctx.reply(`你好, ${user_id},这里是私聊`);
 }
@@ -176,15 +192,17 @@ onPrivate(event, ctx) {
 `type` 可选,填写则只处理该子类型,不填处理所有通知。
 
 ```ts
+import type { OneBotNoticeEvent, SnowLumaEventContext } from '../core';
+
 // 只处理「群消息撤回」
 @OnNotice('group_recall')
-onRecall(event, ctx) {
-    ctx.reply(`有人撤回了一条消息(操作者 ${event.user_id})`);
+onRecall(event: OneBotNoticeEvent, ctx: SnowLumaEventContext) {
+    ctx.reply(`收到撤回通知(时间 ${event.time})`);
 }
 
 // 处理所有通知,自行判断类型
 @OnNotice()
-onNotice(event, ctx) {
+onNotice(event: OneBotNoticeEvent, ctx: SnowLumaEventContext) {
     this.bot.logger.info(`通知: ${event.notice_type}`);
 }
 ```
@@ -206,15 +224,17 @@ onNotice(event, ctx) {
 `type` 可选:`'friend'`(好友申请)或 `'group'`(加群/邀请)。未处理请求事件默认不自动放行。
 
 ```ts
+import type { OneBotRequestEvent, SnowLumaEventContext } from '../core';
+
 // 自动同意好友申请
 @OnRequest('friend')
-onFriendRequest(event, ctx) {
+onFriendRequest(event: OneBotRequestEvent, ctx: SnowLumaEventContext) {
     ctx.approve();
 }
 
 // 加群申请按备注关键词决定
 @OnRequest('group')
-onGroupRequest(event, ctx) {
+onGroupRequest(event: OneBotRequestEvent, ctx: SnowLumaEventContext) {
     if (event.comment?.includes('jsbot')) {
         ctx.approve();
     } else {
@@ -230,8 +250,10 @@ onGroupRequest(event, ctx) {
 拦截所有事件,可放行、拦截或改写。详见 [06-middleware](06-middleware.md)。
 
 ```ts
+import type { EventNext, SnowLumaEvent, SnowLumaEventContext } from '../core';
+
 @OnMiddleware()
-async filter(event, ctx, next) {
+async filter(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
     if ('user_id' in event && event.user_id === 10001) return;
     await next();
 }
@@ -242,11 +264,14 @@ async filter(event, ctx, next) {
 同一逻辑同时支持命令与关键词触发:
 
 ```ts
+import { Plugin, Command, OnGroupMessage, OnPrivateMessage } from '../core';
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 export class GreetPlugin extends Plugin {
     @Command('hello')
     @OnGroupMessage()
     @OnPrivateMessage()
-    greet(event, ctx) {
+    greet(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
         ctx.reply('Hello!');
     }
 }

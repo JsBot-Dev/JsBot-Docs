@@ -41,10 +41,11 @@ import {
 
 ```ts
 import { Plugin, OnMessage } from '../core';
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
 import { isGroupMessageEvent } from '@snowluma/sdk';
 
 @OnMessage()
-onMessage(event, ctx) {
+onMessage(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
     if (isGroupMessageEvent(event)) {
         // 收窄为 OneBotGroupMessageEvent,可安全访问 group_id
         const { group_id, sender } = event;
@@ -181,8 +182,10 @@ const segs = fromCQString(cq);        // CQ 码 → 消息段
 在 `@OnMessage` 里想同时拿到群号和文本,又不愿写死类型:
 
 ```ts
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 @OnMessage()
-onMessage(event, ctx) {
+onMessage(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
     if (!isMessageEvent(event)) return;
     const text = event.raw_message;
     const scene = isGroupMessageEvent(event)

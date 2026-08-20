@@ -7,9 +7,12 @@
 ## 访问方式
 
 ```ts
+import { Plugin, Command } from '../core';
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 export class AdminPlugin extends Plugin {
     @Command('mute', { prefixes: '/' })
-    async mute(event, ctx) {
+    async mute(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
         if (event.message_type !== 'group') return;
         await this.bot.client.setGroupBan(event.group_id, event.user_id, 600);
         ctx.reply('已禁言 10 分钟');
@@ -129,8 +132,10 @@ this.bot.logger.info(`OneBot 实现: ${JSON.stringify(v)}`);
 `client.call` / 类型化动作在接口返回失败时抛 `SnowLumaApiError`(含 `retcode`、`message`)。建议在需要可靠性的路径 catch:
 
 ```ts
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 @Command('ban', { prefixes: '/' })
-async ban(event, ctx) {
+async ban(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
     if (event.message_type !== 'group') return;
     try {
         await this.bot.client.setGroupBan(event.group_id, event.user_id, 600);

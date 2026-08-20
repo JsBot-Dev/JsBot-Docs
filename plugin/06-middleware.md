@@ -5,8 +5,10 @@
 ## 签名
 
 ```ts
+import type { EventNext, SnowLumaEvent, SnowLumaEventContext } from '../core';
+
 @OnMiddleware()
-async filter(event, ctx, next) {
+async filter(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
     // 事件分发前的逻辑
     await next();   // 放行:继续后续处理器
     // 事件分发后的逻辑(可选)
@@ -20,6 +22,7 @@ async filter(event, ctx, next) {
 
 ```ts
 import { Plugin, OnMiddleware } from '../core';
+import type { EventNext, SnowLumaEvent, SnowLumaEventContext } from '../core';
 
 // 全局黑名单:屏蔽指定用户/群
 export class BlacklistPlugin extends Plugin {
@@ -30,7 +33,7 @@ export class BlacklistPlugin extends Plugin {
     }
 
     @OnMiddleware()
-    async block(event, ctx, next) {
+    async block(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
         const userId = 'user_id' in event ? event.user_id : undefined;
         const groupId = 'group_id' in event ? event.group_id : undefined;
 
@@ -46,9 +49,12 @@ export class BlacklistPlugin extends Plugin {
 ## 全局日志
 
 ```ts
+import { Plugin, OnMiddleware } from '../core';
+import type { EventNext, SnowLumaEvent, SnowLumaEventContext } from '../core';
+
 export class LogPlugin extends Plugin {
     @OnMiddleware()
-    async log(event, ctx, next) {
+    async log(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
         const start = Date.now();
         await next();
         const kind = event.post_type;
@@ -62,8 +68,10 @@ export class LogPlugin extends Plugin {
 中间件可以修改 `event` 后再放行(对同一事件对象原地改):
 
 ```ts
+import type { EventNext, SnowLumaEvent, SnowLumaEventContext } from '../core';
+
 @OnMiddleware()
-async normalize(event, ctx, next) {
+async normalize(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
     if ('raw_message' in event && typeof event.raw_message === 'string') {
         event.raw_message = event.raw_message.trim();
     }
@@ -79,9 +87,10 @@ async normalize(event, ctx, next) {
 
 ```ts
 import { isGroupMessageEvent } from '@snowluma/sdk';
+import type { EventNext, SnowLumaEvent, SnowLumaEventContext } from '../core';
 
 @OnMiddleware()
-async onlyGroup(event, ctx, next) {
+async onlyGroup(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
     if (!isGroupMessageEvent(event)) return;
     // 此时 event 是 OneBotGroupMessageEvent,可安全访问 group_id
     await next();

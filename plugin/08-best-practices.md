@@ -20,15 +20,17 @@ src/plugins/weather/
 - 需要主动/定时/跨会话发送时才用 `client.sendGroupMessage` 等
 
 ```ts
+import type { CommandContext, OneBotMessageEvent } from '../core';
+
 // 推荐
 @Command('ping')
-ping(event, ctx) {
+ping(event: OneBotMessageEvent, ctx: CommandContext) {
     ctx.reply('pong');
 }
 
 // 不推荐:还得手动判断场景与事件类型
 @Command('ping')
-async ping(event, ctx) {
+async ping(event: OneBotMessageEvent, ctx: CommandContext) {
     if (isGroupMessageEvent(event)) {
         await this.bot.client.sendGroupMessage(event.group_id, 'pong');
     } else if (isPrivateMessageEvent(event)) {
@@ -44,8 +46,10 @@ async ping(event, ctx) {
 - `onLoad` 抛错会终止整个启动,校验失败应尽早抛、带清晰信息
 
 ```ts
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 @Command('weather', { prefixes: '/' })
-async weather(event, ctx) {
+async weather(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
     try {
         const data = await this.bot.client.getStrangerInfo(event.user_id);
         ctx.reply(JSON.stringify(data));
@@ -63,11 +67,14 @@ async weather(event, ctx) {
 - 高频命令(如复读、抽卡)加简单防抖/冷却,避免刷屏和 API 过载
 
 ```ts
+import { Plugin, Command } from '../core';
+import type { CommandContext, OneBotMessageEvent } from '../core';
+
 export class CooldownPlugin extends Plugin {
     private lastUse = new Map<number, number>();
 
     @Command('cd')
-    cd(event, ctx) {
+    cd(event: OneBotMessageEvent, ctx: CommandContext) {
         const now = Date.now();
         const last = this.lastUse.get(event.user_id) ?? 0;
         if (now - last < 3000) {
@@ -125,8 +132,10 @@ export class ApiPlugin extends Plugin {
 - `@OnGroupMessage` / `@OnPrivateMessage` 已自动收窄,无需再判断
 
 ```ts
+import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+
 @OnMessage()
-onMessage(event, ctx) {
+onMessage(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
     if (!isGroupMessageEvent(event)) return;
     ctx.reply(`群 ${event.group_id}`);
 }
