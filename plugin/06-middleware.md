@@ -46,6 +46,38 @@ export class BlacklistPlugin extends Plugin {
 }
 ```
 
+### 管理员鉴权
+
+用 `@AdminCommand()` 标记管理员指令后(见 [02-decorators](02-decorators.md)),命中这些指令的消息事件会由内核自动附带 `isAdmin: true`。中间件据此放行或拦截:
+
+```ts
+import { Plugin, OnMiddleware } from '../core';
+import type { EventNext, SnowLumaEvent, SnowLumaEventContext } from '../core';
+import { isMessageEvent } from '@snowluma/sdk';
+
+export class AdminPlugin extends Plugin {
+    private admins = new Set<number>();
+
+    async onLoad() {
+        // 管理员名单来自配置/环境变量,此处仅为示例
+        this.admins = new Set([10001, 10002]);
+    }
+
+    @OnMiddleware()
+    async auth(event: SnowLumaEvent, ctx: SnowLumaEventContext, next: EventNext) {
+        if (!isMessageEvent(event)) return next();
+        // 仅管理员指令需要鉴权;命中且发送者非管理员则拦截
+        if (event.isAdmin && !this.admins.has(event.user_id)) {
+            ctx.reply('你没有权限执行该指令');
+            return; // 不调用 next(),事件到此为止
+        }
+        await next();
+    }
+}
+```
+
+> 内核只负责打标,名单与拦截策略完全由插件决定。
+
 ## 全局日志
 
 ```ts
@@ -121,6 +153,7 @@ BlacklistPlugin.mw → LogPlugin.mw → 各插件的命令/事件处理器
 | 场景       | 做法                               |
 | ---------- | ---------------------------------- |
 | 用户/群黑名单 | 拦截特定 `user_id` / `group_id`   |
+| 管理员鉴权 | 命中 `@AdminCommand` 指令时读 `event.isAdmin`,非名单用户拦截 |
 | 关键词风控 | 命中敏感词直接拦截                  |
 | 频率限制   | 按 `user_id` 计数,超频拦截          |
 | 全局埋点   | 在 `next()` 前后计时、计数           |

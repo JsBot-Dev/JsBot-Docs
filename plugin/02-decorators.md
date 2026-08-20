@@ -7,6 +7,7 @@
 | 装饰器              | 触发条件           | 处理器签名              | 底层注册                 |
 | ------------------- | ------------------ | ----------------------- | ------------------------ |
 | `@Command(...)`     | 匹配命令文本       | `(event, ctx, match)`   | `client.command`         |
+| `@AdminCommand()`   | 标记管理员指令     | `(event, ctx, match)`   | 与 `@Command` 共用,内核自动附带 `isAdmin` |
 | `@OnMessage()`      | 任意消息           | `(event, ctx)`          | `client.onMessage`       |
 | `@OnGroupMessage()` | 群聊消息           | `(event, ctx)`          | `client.onGroupMessage`  |
 | `@OnPrivateMessage()`| 私聊消息          | `(event, ctx)`          | `client.onPrivateMessage`|
@@ -131,6 +132,27 @@ ping(event: OneBotMessageEvent, ctx: CommandContext) {
 | `args`    | 匹配后剩余文本按空白切分的参数数组(正则:匹配之外的剩余) |
 | `rest`    | 与 `args` 同源但保留原文(正则:匹配之外的剩余)      |
 | `match`   | `RegExpMatchArray \| null`(仅正则时非 null,捕获组在此) |
+
+## `@AdminCommand()` — 管理员指令
+
+标记方法为管理员指令,**必须与 `@Command` 搭配使用**。命中该指令的消息事件会被内核中间件自动附带 `isAdmin: true`,用于后续鉴权:
+
+```ts
+import type { CommandContext, OneBotMessageEvent } from '../core';
+
+@AdminCommand()
+@Command('ban')
+ban(event: OneBotMessageEvent, ctx: CommandContext) {
+    // 命中该指令的消息会带 event.isAdmin === true
+}
+```
+
+要点:
+
+- `@AdminCommand()` 不改变处理器签名,仍按 `@Command` 的 `(event, ctx, match)` 编写
+- 事件类型统一用 `OneBotMessageEvent`(内核已通过类型增强为其注入 `isAdmin?: boolean`),直接读 `event.isAdmin` 即可,无需额外类型
+- 内核只负责**打标**,拦截/放行逻辑由你在中间件里读 `event.isAdmin` 自行实现(示例见 [06-middleware](06-middleware.md))
+- 未命中管理员指令的普通消息,事件**不会**带 `isAdmin` 字段(值为 `undefined`)
 
 ## 事件装饰器
 

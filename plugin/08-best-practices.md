@@ -46,10 +46,10 @@ async ping(event: OneBotMessageEvent, ctx: CommandContext) {
 - `onLoad` 抛错会终止整个启动,校验失败应尽早抛、带清晰信息
 
 ```ts
-import type { OneBotMessageEvent, SnowLumaEventContext } from '../core';
+import type { CommandContext, OneBotMessageEvent } from '../core';
 
 @Command('weather', { prefixes: '/' })
-async weather(event: OneBotMessageEvent, ctx: SnowLumaEventContext) {
+async weather(event: OneBotMessageEvent, ctx: CommandContext) {
     try {
         const data = await this.bot.client.getStrangerInfo(event.user_id);
         ctx.reply(JSON.stringify(data));
